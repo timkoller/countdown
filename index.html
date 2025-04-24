@@ -43,7 +43,13 @@
       filter: drop-shadow(0px 15vw 60px #ffffff);
       height: 0%;
       z-index: 1;
-      transition: height 0.5s ease-out;
+      transform: translateY(100%);
+      transition:
+      transform 1s cubic-bezier(.32,.12,.25,.97),
+      height    0.5s ease-out;
+    }
+    .background-fill.entered {
+      transform: translateY(0);
     }
     .container {
       position: relative;
@@ -131,6 +137,17 @@
   </div>
 
   <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      // kick off the rise-up animation
+      requestAnimationFrame(() => {
+        document.getElementById('bg-fill').classList.add('entered');
+      });
+    
+      // start your countdown as before
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    });
+    
     // Build both left + right scales
     (function buildScales() {
       const total = 100;
@@ -190,3 +207,4 @@
 
 </body>
 </html>
+ 
