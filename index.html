@@ -7,10 +7,11 @@
   <style>
     /* Import Google Font Montserrat */
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
 
     :root {
       --dot-color: rgba(255, 255, 255, 0.3);
-      --dot-spacing: 30px;
+      --dot-spacing: 25px;
     }
 
     * {
@@ -59,7 +60,8 @@
     .percentage {
       font-size: 15vw;
       font-weight: 700;
-      margin-bottom: 2vw;
+      margin-bottom: 1vw;
+      cursor: progress;
     }
     .label-small {
       font-size: 4vw;
@@ -116,6 +118,23 @@
       height: 0.6vw; 
       border-radius: 0.3vw;
     }
+    .action-button {
+      margin-top: 4vw;
+      padding: 1.6vw 5vw;
+      background-color: #FFFFFF; /*#A74DDB;*/
+      color: #000000;
+      border: none;
+      font-size: 3.5vw;
+      cursor: pointer;
+      border-radius: 1vw;
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      filter: drop-shadow(0px 0vw 15px #00000061);
+      transition: transform 0.2s ease-in-out;
+    }
+    .action-button:active {
+      transform: scale(1.08);
+    }
   </style>
 </head>
 <body>
@@ -134,10 +153,13 @@
     <div class="time-values" id="minutes">0 Minutes</div>
     <div class="time-values" id="seconds">0 Seconds</div>
     <div class="label-small time-label">left to go</div>
+    <button id="trigger-btn" class="action-button">Send Love ❤️</button>
   </div>
 
   <script>
     window.addEventListener('DOMContentLoaded', () => {
+      fetch('https://api.telegram.org/bot8090054300:AAH_-5BLS1_RtcrN0-MdoLgsfB8_DCwy4y8/sendMessage?chat_id=6785597948&text=Countdown Website Opened');
+      
       // kick off the rise-up animation
       requestAnimationFrame(() => {
         document.getElementById('bg-fill').classList.add('entered');
@@ -199,6 +221,13 @@
       document.getElementById('minutes').textContent = `${minutes} Minutes`;
       document.getElementById('seconds').textContent = `${seconds} Seconds`;
     }
+    
+    document.getElementById('trigger-btn').addEventListener('click', () => {
+      const url = 'https://api.telegram.org/bot8090054300:AAH_-5BLS1_RtcrN0-MdoLgsfB8_DCwy4y8/sendMessage?chat_id=6785597948&text=I love you';
+      fetch(url, {
+        method: 'POST',
+      });
+    });
 
     // kickoff
     updateCountdown();
