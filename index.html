@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Countdown</title>
+  <style>
+    /* Import Google Font Montserrat */
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+    :root {
+      --dot-color: rgba(255, 255, 255, 0.3);
+      --dot-spacing: 25px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      font-family: 'Montserrat', sans-serif;
+      overflow: hidden;
+    }
+    body {
+      position: relative;
+      background: #1C1C1C;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-image: radial-gradient(var(--dot-color) 1px, transparent 1px);
+      background-size: var(--dot-spacing) var(--dot-spacing);
+    }
+    .background-fill {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: linear-gradient(#D44040, #691616);
+      filter: drop-shadow(0px 10vw 60px #ffffff);
+      height: 0%;
+      z-index: 1;
+      transform: translateY(100%);
+      transition:
+      transform 1s cubic-bezier(.32,.12,.25,.97),
+      height    0.5s ease-out;
+    }
+    .background-fill.entered {
+      transform: translateY(0);
+    }
+    .container {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+    .percentage {
+      font-size: 15vw;
+      font-weight: 700;
+      margin-bottom: 1vw;
+      cursor: progress;
+    }
+    .label-small {
+      font-size: 4vw;
+      font-weight: 400;
+      margin-bottom: 3vw;
+    }
+    .time-values {
+      font-size: 12vw;
+      font-weight: 700;
+      line-height: 1;
+      margin: 2vw 0;
+    }
+    .time-label {
+      font-size: 4vw;
+      font-weight: 400;
+      margin-top: 3vw;
+    }
+    .scale {
+      position: absolute;
+      top: 0;
+      height: 99.9%;
+      width: 10vw;
+      pointer-events: none;
+      z-index: 3;
+    }
+    .scale.left {
+      left: 0;
+    }
+    .scale.right {
+      right: 0;
+    }
+    .scale .line {
+      position: absolute;
+      left: 0;
+      background: #ffffff;
+      opacity: 1;
+    }
+    .scale.right .line {
+      left: auto;
+      right: 0;
+    }
+    .scale .line.minor {
+      width: 5vw;
+      height: 0.2vw; 
+      border-radius: 0.1vw;
+    }
+    .scale .line.medium {
+      width: 7vw;
+      height: 0.4vw; 
+      border-radius: 0.2vw;
+    }
+    .scale .line.major {
+      width: 11vw;
+      height: 0.6vw; 
+      border-radius: 0.3vw;
+    }
+    .action-button {
+      margin-top: 4vw;
+      padding: 1.6vw 5vw;
+      background-color: #FFFFFF; /*#A74DDB;*/
+      color: #000000;
+      border: none;
+      font-size: 4vw;
+      cursor: pointer;
+      border-radius: 1vw;
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      filter: drop-shadow(0px 0vw 15px #00000061);
+      transition: transform 0.2s ease-in-out;
+    }
+    .action-button:active {
+      transform: scale(1.08);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="background-fill" id="bg-fill"></div>
+
+  <!-- left and right scales -->
+  <div class="scale left" id="scale-left"></div>
+  <div class="scale right" id="scale-right"></div>
+
+  <div class="container">
+    <div class="percentage" id="percent">0%</div>
+    <div class="label-small">that's only</div>
+    <div class="time-values" id="days">0 Days</div>
+    <div class="time-values" id="hours">0 Hours</div>
+    <div class="time-values" id="minutes">0 Minutes</div>
+    <div class="time-values" id="seconds">0 Seconds</div>
+    <div class="label-small time-label">left to go</div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {      
+      // kick off the rise-up animation
+      requestAnimationFrame(() => {
+        document.getElementById('bg-fill').classList.add('entered');
+      });
+    
+      // start your countdown as before
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    });
+    
+    // Build both left + right scales
+    (function buildScales() {
+      const total = 100;
+      const minorStep = 2;
+      const mediumStep = 10;
+      const majorStep = 50;
+      ['scale-left', 'scale-right'].forEach(id => {
+        const container = document.getElementById(id);
+        for (let i = 0; i <= total; i += minorStep) {
+          const tick = document.createElement('div');
+          // classify tick
+          if (i % majorStep === 0) {
+            tick.classList.add('line', 'major');
+          } else if (i % mediumStep === 0) {
+            tick.classList.add('line', 'medium');
+          } else {
+            tick.classList.add('line', 'minor');
+          }
+          // invert Y so 0% is bottom
+          tick.style.top = `${100 - i}%`;
+          container.appendChild(tick);
+        }
+      });
+    })();
+
+    // Countdown target
+    const finishDate = new Date('2025-08-15T20:00:00Z');
+    const startDate  = new Date('2025-08-05T06:00:00Z');
+
+    function updateCountdown() {
+      const now = new Date();
+      const totalDuration = finishDate - startDate;
+      const remaining = finishDate - now;
+      const elapsed = now - startDate;
+      const pct = Math.min(100, Math.max(0, elapsed / totalDuration * 100));
+
+      document.getElementById('percent').textContent = Math.floor(pct) + '%';
+      document.getElementById('bg-fill').style.height = pct + '%';
+
+      let diff = remaining;
+      const sec = 1000, min = sec * 60, hr = min * 60, day = hr * 24;
+      const days    = Math.floor(diff / day);    diff %= day;
+      const hours   = Math.floor(diff / hr);     diff %= hr;
+      const minutes = Math.floor(diff / min);    diff %= min;
+      const seconds = Math.floor(diff / sec);
+
+      document.getElementById('days').textContent    = `${days} Days`;
+      document.getElementById('hours').textContent   = `${hours} Hours`;
+      document.getElementById('minutes').textContent = `${minutes} Minutes`;
+      document.getElementById('seconds').textContent = `${seconds} Seconds`;
+    }
+
+    // kickoff
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  </script>
+
+</body>
+</html>
+ 
